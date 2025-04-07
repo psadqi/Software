@@ -79,7 +79,7 @@ class StaffLogin(QWidget):
 
         # Login Button
         self.login_button = QPushButton("ورود", self)
-        self.login_button.setGeometry(150, 550, 300, 40)
+        self.login_button.setGeometry(305, 550, 145, 40)
         self.login_button.setFont(QFont('nazanintar', 20))
         self.login_button.setStyleSheet("""
             QPushButton {
@@ -96,7 +96,7 @@ class StaffLogin(QWidget):
 
         # Back Button
         self.back_button = QPushButton("بازگشت", self)
-        self.back_button.setGeometry(150, 600, 300, 40)
+        self.back_button.setGeometry(150, 550, 145, 40)
         self.back_button.setFont(QFont('nazanintar', 20))
         self.back_button.setStyleSheet("""
             QPushButton {
@@ -110,6 +110,21 @@ class StaffLogin(QWidget):
             }
         """)
         self.back_button.clicked.connect(parent.init_main_menu)
+
+        self.pass_button = QPushButton("بازیابی رمز عبور", self)
+        self.pass_button.setGeometry(225, 600, 145, 40)
+        self.pass_button.setFont(QFont('nazanintar', 20))
+        self.pass_button.setStyleSheet("""
+                            QPushButton {
+                                background-color: #4a709b;
+                                color: white;
+                                border-radius: 5px;
+                                font-size: 24px;
+                            }
+                            QPushButton:hover {
+                                background-color: #6f86a1;
+                            }
+                        """)
 
     def check_login(self):
         db = DB("project_db.db")
