@@ -108,13 +108,11 @@ class MainWindow(QMainWindow):
         self.clear_layout()
         self.manager_login = ManagerLogin(self)
         self.setCentralWidget(self.manager_login)
-        self.set_background("1.jpg")
 
     def show_staff_login(self):
         self.clear_layout()
         self.staff_login = StaffLogin(self)
         self.setCentralWidget(self.staff_login)
-        self.set_background("1.jpg")
 
 
 if __name__ == "__main__":
