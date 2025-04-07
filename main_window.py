@@ -10,11 +10,10 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("گیم نت")
         self.setWindowIcon(QIcon("logo.png"))
-        self.setGeometry(300, 300, 600, 600)
-        self.showMaximized()
+        self.setGeometry(300, 200, 1000, 600)
 
         # Set background image
-        self.set_background("1.jpg")
+        self.set_background("main.jpg")
         self.init_main_menu()
 
     def set_background(self, image_path):
@@ -34,7 +33,7 @@ class MainWindow(QMainWindow):
 
     def resizeEvent(self, event):
         """Handle window resize events to update the background"""
-        self.set_background("1.jpg")
+        self.set_background("main.jpg")
         super().resizeEvent(event)
 
     def init_main_menu(self):
