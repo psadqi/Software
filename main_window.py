@@ -3,6 +3,7 @@ from PyQt6.QtGui import QPixmap, QPainter, QFont, QIcon
 from manager_login import ManagerLogin
 from staff_login import StaffLogin
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
