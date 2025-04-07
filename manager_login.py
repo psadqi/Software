@@ -1,15 +1,18 @@
-from PyQt6.QtGui import QFont, QPainter, QPixmap
-from PyQt6.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt6.QtWidgets import (
+    QWidget, QLabel, QLineEdit, QPushButton,
+    QMessageBox, QVBoxLayout, QHBoxLayout
+)
+from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 import sqlite3
 
 
 class DB:
     def __init__(self, name):
-        self._name = name
+        self.name = name
 
     def select(self, username):
-        self.connect = sqlite3.connect(self._name)
+        self.connect = sqlite3.connect(self.name)
         self.cursor = self.connect.cursor()
         self.cursor.execute("SELECT password FROM manager_admin WHERE username = ?", (username,))
         password = self.cursor.fetchone()
@@ -19,14 +22,23 @@ class DB:
 
 class ManagerLogin(QWidget):
     def __init__(self, parent):
-        super().__init__()
+        super().__init__(parent)
         self.parent = parent
-        self.setFixedSize(1100, 700)
+        self.setup_ui()
 
-        # Title Label
-        self.label = QLabel("ورود مالک", self)
+    def setup_ui(self):
+        # Outer layout
+        outer_layout = QHBoxLayout(self)
+
+        # === Left fixed container ===
+        fixed_left_widget = QWidget()
+        fixed_left_widget.setFixedSize(400, 600)
+        fixed_left_layout = QVBoxLayout(fixed_left_widget)
+        fixed_left_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Title label
+        self.label = QLabel("ورود مالک")
         self.label.setFont(QFont('nazanintar', 28))
-        self.label.setGeometry(150, 50, 300, 50)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setStyleSheet("""
             QLabel {
@@ -43,99 +55,130 @@ class ManagerLogin(QWidget):
                 text-shadow: 2px 2px 3px black;
             }
         """)
+        fixed_left_layout.addWidget(self.label)
 
-        # Manager Image
-        self.manager_image = QLabel(self)
-        manager_pixmap = QPixmap("manager.png")
-        self.manager_image.setPixmap(manager_pixmap.scaled(
-            300, 300,
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
-        ))
-        self.manager_image.setGeometry(150, 120, 300, 350)
-        self.manager_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # Staff image
+        self.staff_image = QLabel()
+        staff_pixmap = QPixmap("manager.png")
+        if not staff_pixmap.isNull():
+            self.staff_image.setPixmap(staff_pixmap.scaled(
+                300, 300,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            ))
+        self.staff_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        fixed_left_layout.addWidget(self.staff_image)
 
-        # Username Field
-        self.username = QLineEdit(self)
+        # Form layout
+        form_layout = QVBoxLayout()
+        form_layout.setSpacing(20)
+
+        self.username = QLineEdit()
         self.username.setFont(QFont('nazanintar', 16))
         self.username.setPlaceholderText("نام کاربری")
-        self.username.setGeometry(150, 450, 300, 40)
         self.username.setStyleSheet("""
             QLineEdit {
                 background: white;
                 border: 2px solid #3498db;
                 border-radius: 5px;
                 padding: 5px;
+                min-width: 300px;
             }
         """)
+        form_layout.addWidget(self.username)
 
-        # Password Field
-        self.password = QLineEdit(self)
+        self.password = QLineEdit()
         self.password.setFont(QFont('nazanintar', 16))
         self.password.setPlaceholderText("رمز عبور")
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password.setGeometry(150, 500, 300, 40)
         self.password.setStyleSheet(self.username.styleSheet())
+        form_layout.addWidget(self.password)
 
-        # Login Button
-        self.login_button = QPushButton("ورود", self)
-        self.login_button.setGeometry(305, 550, 145, 40)
-        self.login_button.setFont(QFont('nazanintar', 20))
-        self.login_button.setStyleSheet("""
-            QPushButton {
-                background-color: #3498db;
-                color: white;
-                border-radius: 5px;
-                font-size: 22px;
-            }
-            QPushButton:hover {
-                background-color: #2980b9;
-            }
-        """)
-        self.login_button.clicked.connect(self.check_login)
+        # Buttons layout
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setSpacing(20)
 
-        # Back Button
-        self.back_button = QPushButton("بازگشت", self)
-        self.back_button.setGeometry(150, 550, 145, 40)
+        self.back_button = QPushButton("بازگشت")
         self.back_button.setFont(QFont('nazanintar', 20))
         self.back_button.setStyleSheet("""
             QPushButton {
                 background-color: #e74c3c;
                 color: white;
                 border-radius: 5px;
-                font-size: 24px;
+                min-width: 120px;
+                min-height: 50px;
             }
             QPushButton:hover {
                 background-color: #e0392b;
             }
         """)
-        self.back_button.clicked.connect(parent.init_main_menu)
+        self.back_button.clicked.connect(lambda: self.parent.init_main_menu())
+        buttons_layout.addWidget(self.back_button)
 
-        self.pass_button = QPushButton("بازیابی رمز عبور", self)
-        self.pass_button.setGeometry(225, 600, 145, 40)
-        self.pass_button.setFont(QFont('nazanintar', 20))
-        self.pass_button.setStyleSheet("""
+        self.login_button = QPushButton("ورود")
+        self.login_button.setFont(QFont('nazanintar', 20))
+        self.login_button.setStyleSheet("""
                     QPushButton {
-                        background-color: #4a709b;
+                        background-color: #3498db;
                         color: white;
                         border-radius: 5px;
-                        font-size: 24px;
+                        min-width: 120px;
+                        min-height: 50px;
                     }
                     QPushButton:hover {
-                        background-color: #6f86a1;
+                        background-color: #2980b9;
                     }
                 """)
+        self.login_button.clicked.connect(self.check_login)
+        buttons_layout.addWidget(self.login_button)
+
+        form_layout.addLayout(buttons_layout)
+
+        # New Help button below the row
+        self.help_button = QPushButton("بازیابی رمز عبور")
+        self.help_button.setFont(QFont('nazanintar', 20))
+        self.help_button.setStyleSheet("""
+            QPushButton {
+                background-color: #4a709b;
+                color: white;
+                border-radius: 5px;
+                min-width: 180px;
+                min-height: 50px;
+            }
+            QPushButton:hover {
+                background-color: #6f86a1;
+            }
+        """)
+        self.help_button.clicked.connect(self.show_help)
+        form_layout.addWidget(self.help_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        fixed_left_layout.addLayout(form_layout)
+
+        # --- Wrap fixed_left_widget with spacing to center in left half ---
+        left_side = QVBoxLayout()
+        left_side.addStretch(1)
+        left_side.addWidget(fixed_left_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+        left_side.addStretch(1)
+
+        outer_layout.addLayout(left_side, 1)  # Left half
+        outer_layout.addStretch(1)  # Right half (empty stretch)
 
     def check_login(self):
         db = DB("project_db.db")
+
         username = self.username.text()
         password = self.password.text()
 
         try:
             correct_password = db.select(username)
             if correct_password and correct_password[0] == password:
-                pass
-                # Proceed to manager dashboard or next screen
+                QMessageBox.information(
+                    self,
+                    "موفق",
+                    "خوش آمدید",
+                    QMessageBox.StandardButton.Ok
+                )
+                # Proceed to staff dashboard or next screen
             else:
                 QMessageBox.critical(
                     self,
@@ -155,3 +198,11 @@ class ManagerLogin(QWidget):
             )
             self.username.setText("")
             self.password.setText("")
+
+    def show_help(self):
+        QMessageBox.information(
+            self,
+            "راهنما",
+            "در صورت نیاز به راهنمایی، با مدیر تماس بگیرید.",
+            QMessageBox.StandardButton.Ok
+        )
