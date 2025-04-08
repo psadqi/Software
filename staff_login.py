@@ -4,20 +4,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
-import sqlite3
-
-
-class DB:
-    def __init__(self, name):
-        self.name = name
-
-    def select(self, username):
-        self.connect = sqlite3.connect(self.name)
-        self.cursor = self.connect.cursor()
-        self.cursor.execute("SELECT password FROM staff WHERE username = ?", (username,))
-        password = self.cursor.fetchone()
-        self.connect.close()
-        return password
+from data_base import DataBase
 
 
 class StaffLogin(QWidget):
@@ -25,6 +12,7 @@ class StaffLogin(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.setup_ui()
+
 
     def setup_ui(self):
         # Outer layout
@@ -164,46 +152,24 @@ class StaffLogin(QWidget):
         outer_layout.addStretch(1)  # Right half (empty stretch)
 
     def check_login(self):
-        db = DB("project_db.db")
+        db = DataBase("project_db.db")
 
         username = self.username.text()
         password = self.password.text()
 
         try:
-            correct_password = db.select(username)
+            correct_password = db.staff_pass(username)
             if correct_password and correct_password[0] == password:
-                QMessageBox.information(
-                    self,
-                    "موفق",
-                    "خوش آمدید",
-                    QMessageBox.StandardButton.Ok
-                )
+                QMessageBox.information(self, "ورود", "خوش آمدید", QMessageBox.StandardButton.Ok)
                 # Proceed to staff dashboard or next screen
             else:
-                QMessageBox.critical(
-                    self,
-                    "خطا",
-                    "نام کاربری یا رمز عبور اشتباه است!",
-                    QMessageBox.StandardButton.Ok
-                )
+                QMessageBox.warning(self, "خطا", "نام کاربری یا رمز عبور اشتباه است!", QMessageBox.StandardButton.Ok)
                 self.username.setText("")
                 self.password.setText("")
         except Exception as e:
-            print(f"Error: {e}")
-            QMessageBox.critical(
-                self,
-                "خطا",
-                "نام کاربری یا رمز عبور اشتباه است!",
-                QMessageBox.StandardButton.Ok
-            )
+            QMessageBox.critical(self, "خطا", "مشکلی در سیستم به وجود آمده است!", QMessageBox.StandardButton.Ok)
             self.username.setText("")
             self.password.setText("")
 
     def show_help(self):
-        QMessageBox.information(
-            self,
-            "راهنما",
-            "در صورت نیاز به راهنمایی، با مدیر تماس بگیرید.",
-            QMessageBox.StandardButton.Ok
-        )
-
+        QMessageBox.information(self, "راهنما", "در صورت نیاز به راهنمایی، با مدیر تماس بگیرید.", QMessageBox.StandardButton.Ok)
