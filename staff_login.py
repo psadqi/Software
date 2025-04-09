@@ -13,7 +13,6 @@ class StaffLogin(QWidget):
         self.parent = parent
         self.setup_ui()
 
-
     def setup_ui(self):
         # Outer layout
         outer_layout = QHBoxLayout(self)
@@ -80,6 +79,8 @@ class StaffLogin(QWidget):
         self.password.setPlaceholderText("رمز عبور")
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.password.setStyleSheet(self.username.styleSheet())
+        # Connect returnPressed signal to check_login
+        self.password.returnPressed.connect(self.check_login)
         form_layout.addWidget(self.password)
 
         # Buttons layout
@@ -118,6 +119,8 @@ class StaffLogin(QWidget):
                     }
                 """)
         self.login_button.clicked.connect(self.check_login)
+        # Set as default button to respond to Enter key
+        self.login_button.setDefault(True)
         buttons_layout.addWidget(self.login_button)
 
         form_layout.addLayout(buttons_layout)

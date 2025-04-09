@@ -5,14 +5,13 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 from data_base import DataBase
-
+from passlib.hash import argon2
 
 class ManagerLogin(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
         self.setup_ui()
-
 
     def setup_ui(self):
         # Outer layout
@@ -25,7 +24,7 @@ class ManagerLogin(QWidget):
         fixed_left_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Title label
-        self.label = QLabel("ورود مالک")
+        self.label = QLabel("ورود مدیر")
         self.label.setFont(QFont('nazanintar', 28))
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setStyleSheet("""
@@ -88,41 +87,41 @@ class ManagerLogin(QWidget):
 
         self.back_button = QPushButton("بازگشت")
         self.back_button.setFont(QFont('nazanintar', 20))
-        self.back_button.setStyleSheet("""
-            QPushButton {
-                background-color: #e74c3c;
-                color: white;
-                border-radius: 5px;
-                min-width: 120px;
-                min-height: 50px;
-            }
-            QPushButton:hover {
-                background-color: #e0392b;
-            }
+        self.back_button.setStyleSheet("""  
+            QPushButton {  
+                background-color: #e74c3c;  
+                color: white;  
+                border-radius: 5px;  
+                min-width: 120px;  
+                min-height: 50px;  
+            }  
+            QPushButton:hover {  
+                background-color: #e0392b;  
+            }  
         """)
         self.back_button.clicked.connect(lambda: self.parent.init_main_menu())
         buttons_layout.addWidget(self.back_button)
 
         self.login_button = QPushButton("ورود")
         self.login_button.setFont(QFont('nazanintar', 20))
-        self.login_button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #3498db;
-                        color: white;
-                        border-radius: 5px;
-                        min-width: 120px;
-                        min-height: 50px;
-                    }
-                    QPushButton:hover {
-                        background-color: #2980b9;
-                    }
-                """)
+        self.login_button.setStyleSheet("""  
+            QPushButton {  
+                background-color: #3498db;  
+                color: white;  
+                border-radius: 5px;  
+                min-width: 120px;  
+                min-height: 50px;  
+            }  
+            QPushButton:hover {  
+                background-color: #2980b9;  
+            }  
+        """)
         self.login_button.clicked.connect(self.check_login)
         buttons_layout.addWidget(self.login_button)
 
         form_layout.addLayout(buttons_layout)
 
-        # New Help button below the row
+        # Help button
         self.help_button = QPushButton("بازیابی رمز عبور")
         self.help_button.setFont(QFont('nazanintar', 20))
         self.help_button.setStyleSheet("""
@@ -142,39 +141,43 @@ class ManagerLogin(QWidget):
 
         fixed_left_layout.addLayout(form_layout)
 
-        # --- Wrap fixed_left_widget with spacing to center in left half ---
+        # Wrap fixed_left_widget with spacing
         left_side = QVBoxLayout()
         left_side.addStretch(1)
         left_side.addWidget(fixed_left_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         left_side.addStretch(1)
 
-        outer_layout.addLayout(left_side, 1)  # Left half
-        outer_layout.addStretch(1)  # Right half (empty stretch)
+        outer_layout.addLayout(left_side, 1)
+        outer_layout.addStretch(1)
 
     def check_login(self):
         db = DataBase("project_db.db")
-
         username = self.username.text()
         password = self.password.text()
 
         try:
-            correct_password = db.manager_pass(username)
-            if correct_password and correct_password[0] == password:
-                QMessageBox.information(self, "ورود", "خوش آمدید", QMessageBox.StandardButton.Ok)
-                # Proceed to staff dashboard or next screen
+            stored_hash = db.manager_pass(username)
+            if stored_hash and argon2.verify(password, stored_hash[0]):
+                QMessageBox.information(
+                    self, "ورود", "مدیر خوش آمدید", QMessageBox.StandardButton.Ok)
+                # Proceed to next screen
             else:
-                QMessageBox.warning(self, "خطا", "نام کاربری یا رمز عبور اشتباه است!", QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(
+                    self, "خطا", "نام کاربری یا رمز عبور اشتباه است",
+                    QMessageBox.StandardButton.Ok)
                 self.username.setText("")
                 self.password.setText("")
         except Exception as e:
-            QMessageBox.critical(self, "خطا", "مشکلی در سیستم به وجود آمده است!", QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(
+                self, "خطا", f"مشکل در سیستم به وجود آمده: {str(e)}",
+                QMessageBox.StandardButton.Ok)
             self.username.setText("")
             self.password.setText("")
 
     def show_help(self):
         dialog = QDialog(self)
         dialog.setWindowTitle("بازیابی رمز عبور")
-        dialog.setFixedSize(400, 300)  # Increased size for new fields
+        dialog.setFixedSize(400, 300)
         dialog.setStyleSheet("background-color: #7da9b8;")
 
         # Main layout
@@ -184,7 +187,7 @@ class ManagerLogin(QWidget):
         first_stage_widget = QWidget()
         first_layout = QVBoxLayout()
 
-        label = QLabel("اسم حیوان مورد علاقه شما چیست؟")
+        label = QLabel("لطفاً اطلاعات مورد نیاز را وارد کنید:")
         label.setFont(QFont('nazanintar', 20))
         label.setWordWrap(True)
         first_layout.addWidget(label)
@@ -193,19 +196,20 @@ class ManagerLogin(QWidget):
         self.answer_edit = QLineEdit()
         self.username_edit.setPlaceholderText("نام کاربری")
         self.username_edit.setStyleSheet("""
-                                        QLineEdit {
-                                            background-color: #e1e8f0;
-                                            border-radius: 3px;
-                                        }
-                                        """)
+            QLineEdit {
+                background-color: #e1e8f0;
+                border-radius: 3px;
+            }
+        """)
         self.username_edit.setFont(QFont('nazanintar', 16))
-        self.answer_edit.setPlaceholderText("جواب")
+
+        self.answer_edit.setPlaceholderText("جواب سوال امنیتی")
         self.answer_edit.setStyleSheet("""
-                                                QLineEdit {
-                                                    background-color: #e1e8f0;
-                                                    border-radius: 3px;
-                                                }
-                                                """)
+            QLineEdit {
+                background-color: #e1e8f0;
+                border-radius: 3px;
+            }
+        """)
         self.answer_edit.setFont(QFont('nazanintar', 16))
         first_layout.addWidget(self.username_edit)
         first_layout.addWidget(self.answer_edit)
@@ -213,26 +217,24 @@ class ManagerLogin(QWidget):
         self.verify_button = QPushButton("تایید")
         self.verify_button.setFont(QFont('nazanintar', 16))
         self.verify_button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #4a709b;
-                        border-radius: 5px;
-                        color: white;
-                        min-width: 300px;
-                        min-height: 40px;
-                    }
-                    QPushButton:hover {
-                        background-color: #6f86a1;
-                    }
-                """)
+            QPushButton {
+                background-color: #4a709b;
+                border-radius: 5px;
+                color: white;
+                min-width: 300px;
+                min-height: 40px;
+            }
+            QPushButton:hover {
+                background-color: #6f86a1;
+            }
+        """)
         first_layout.addWidget(self.verify_button)
-
         first_stage_widget.setLayout(first_layout)
         main_layout.addWidget(first_stage_widget)
 
         # Second stage widgets (initially hidden)
         self.second_stage_widget = QWidget()
         second_layout = QVBoxLayout()
-
         self.new_pass_label = QLabel("رمز عبور جدید را وارد کنید:")
         self.new_pass_label.setFont(QFont('nazanintar', 16))
         second_layout.addWidget(self.new_pass_label)
@@ -241,11 +243,11 @@ class ManagerLogin(QWidget):
         self.new_pass_edit.setPlaceholderText("رمز عبور جدید")
         self.new_pass_edit.setFont(QFont('nazanintar', 16))
         self.new_pass_edit.setStyleSheet("""
-                                        QLineEdit {
-                                            background-color: #e1e8f0;
-                                            border-radius: 3px;
-                                        }
-                                        """)
+            QLineEdit {
+                background-color: #e1e8f0;
+                border-radius: 3px;
+            }
+        """)
         self.new_pass_edit.setEchoMode(QLineEdit.EchoMode.Password)
         second_layout.addWidget(self.new_pass_edit)
 
@@ -253,15 +255,15 @@ class ManagerLogin(QWidget):
         self.confirm_pass_edit.setPlaceholderText("تکرار رمز عبور")
         self.confirm_pass_edit.setFont(QFont('nazanintar', 16))
         self.confirm_pass_edit.setStyleSheet("""
-                                        QLineEdit {
-                                            background-color: #e1e8f0;
-                                            border-radius: 3px;
-                                        }
-                                        """)
+            QLineEdit {
+                background-color: #e1e8f0;
+                border-radius: 3px;
+            }
+        """)
         self.confirm_pass_edit.setEchoMode(QLineEdit.EchoMode.Password)
         second_layout.addWidget(self.confirm_pass_edit)
 
-        self.submit_button = QPushButton("تایید نهایی")
+        self.submit_button = QPushButton("تغییر رمز")
         self.submit_button.setFont(QFont('nazanintar', 16))
         self.submit_button.setStyleSheet("""
             QPushButton {
@@ -276,7 +278,6 @@ class ManagerLogin(QWidget):
             }
         """)
         second_layout.addWidget(self.submit_button)
-
         self.second_stage_widget.setLayout(second_layout)
         main_layout.addWidget(self.second_stage_widget)
         self.second_stage_widget.hide()
@@ -288,12 +289,13 @@ class ManagerLogin(QWidget):
             passRecovery = db.manager_recovery(self.username_edit.text())
 
             if passRecovery and passRecovery[0] == self.answer_edit.text():
-                # Hide first stage and show second stage
                 first_stage_widget.hide()
                 self.second_stage_widget.show()
-                dialog.setFixedSize(400, 250)  # Adjust size for new fields
+                dialog.setFixedSize(400, 250)
             else:
-                QMessageBox.warning(self, "خطا", "اطلاعات وارد شده صحیح نیست", QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(
+                    self, "خطا", "اطلاعات وارد شده صحیح نیست",
+                    QMessageBox.StandardButton.Ok)
                 self.username_edit.setText("")
                 self.answer_edit.setText("")
 
@@ -302,24 +304,29 @@ class ManagerLogin(QWidget):
             confirm_pass = self.confirm_pass_edit.text()
 
             if not new_pass:
-                QMessageBox.warning(self, "خطا", "لطفاً رمز عبور جدید را وارد کنید", QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(
+                    self, "خطا", "لطفاً رمز عبور جدید را وارد کنید",
+                    QMessageBox.StandardButton.Ok)
                 return
 
             if new_pass != confirm_pass:
-                QMessageBox.warning(self, "خطا", "رمزهای عبور مطابقت ندارند", QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(
+                    self, "خطا", "رمزهای عبور مطابقت ندارند",
+                    QMessageBox.StandardButton.Ok)
                 return
 
-            # Here you would typically update the password in the database
             try:
                 db = DataBase("project_db.db")
-                # Assuming you have a method to update password
                 db.update_pass(self.username_edit.text(), new_pass)
-                QMessageBox.information(self, "موفق", "رمز عبور با موفقیت تغییر یافت", QMessageBox.StandardButton.Ok)
+                QMessageBox.information(
+                    self, "موفق", "رمز عبور با موفقیت تغییر یافت",
+                    QMessageBox.StandardButton.Ok)
                 dialog.accept()
             except Exception as e:
-                QMessageBox.critical(self, "خطا", f"خطا در تغییر رمز عبور: {str(e)}", QMessageBox.StandardButton.Ok)
+                QMessageBox.critical(
+                    self, "خطا", f"خطا در تغییر رمز عبور: {str(e)}",
+                    QMessageBox.StandardButton.Ok)
 
         self.verify_button.clicked.connect(verify_answer)
         self.submit_button.clicked.connect(submit_new_password)
-
         dialog.exec()
