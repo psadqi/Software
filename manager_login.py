@@ -79,6 +79,8 @@ class ManagerLogin(QWidget):
         self.password.setPlaceholderText("رمز عبور")
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.password.setStyleSheet(self.username.styleSheet())
+        # Connect returnPressed signal to check_login
+        self.password.returnPressed.connect(self.check_login)
         form_layout.addWidget(self.password)
 
         # Buttons layout
@@ -117,6 +119,8 @@ class ManagerLogin(QWidget):
             }  
         """)
         self.login_button.clicked.connect(self.check_login)
+        # Set as default button to respond to Enter key
+        self.login_button.setDefault(True)
         buttons_layout.addWidget(self.login_button)
 
         form_layout.addLayout(buttons_layout)
@@ -249,6 +253,8 @@ class ManagerLogin(QWidget):
             }
         """)
         self.new_pass_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        # Connect returnPressed to submit_new_password
+        self.new_pass_edit.returnPressed.connect(self.submit_new_password)
         second_layout.addWidget(self.new_pass_edit)
 
         self.confirm_pass_edit = QLineEdit()
@@ -261,6 +267,8 @@ class ManagerLogin(QWidget):
             }
         """)
         self.confirm_pass_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        # Connect returnPressed to submit_new_password
+        self.confirm_pass_edit.returnPressed.connect(self.submit_new_password)
         second_layout.addWidget(self.confirm_pass_edit)
 
         self.submit_button = QPushButton("تغییر رمز")
@@ -327,6 +335,8 @@ class ManagerLogin(QWidget):
                     self, "خطا", f"خطا در تغییر رمز عبور: {str(e)}",
                     QMessageBox.StandardButton.Ok)
 
+        # Also connect Enter key in answer_edit to verify_answer
+        self.answer_edit.returnPressed.connect(verify_answer)
         self.verify_button.clicked.connect(verify_answer)
         self.submit_button.clicked.connect(submit_new_password)
         dialog.exec()
