@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 from data_base import DataBase
-from passlib.hash import argon2
+
 
 class ManagerLogin(QWidget):
     def __init__(self, parent):
@@ -88,34 +88,34 @@ class ManagerLogin(QWidget):
 
         self.back_button = QPushButton("بازگشت")
         self.back_button.setFont(QFont('nazanintar', 20))
-        self.back_button.setStyleSheet("""  
-            QPushButton {  
-                background-color: #e74c3c;  
-                color: white;  
-                border-radius: 5px;  
-                min-width: 120px;  
-                min-height: 50px;  
-            }  
-            QPushButton:hover {  
-                background-color: #e0392b;  
-            }  
+        self.back_button.setStyleSheet("""
+            QPushButton {
+                background-color: #e74c3c;
+                color: white;
+                border-radius: 5px;
+                min-width: 120px;
+                min-height: 50px;
+            }
+            QPushButton:hover {
+                background-color: #e0392b;
+            }
         """)
         self.back_button.clicked.connect(lambda: self.parent.init_main_menu())
         buttons_layout.addWidget(self.back_button)
 
         self.login_button = QPushButton("ورود")
         self.login_button.setFont(QFont('nazanintar', 20))
-        self.login_button.setStyleSheet("""  
-            QPushButton {  
-                background-color: #3498db;  
-                color: white;  
-                border-radius: 5px;  
-                min-width: 120px;  
-                min-height: 50px;  
-            }  
-            QPushButton:hover {  
-                background-color: #2980b9;  
-            }  
+        self.login_button.setStyleSheet("""
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                border-radius: 5px;
+                min-width: 120px;
+                min-height: 50px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
         """)
         self.login_button.clicked.connect(self.check_login)
         self.login_button.setDefault(True)
@@ -143,7 +143,7 @@ class ManagerLogin(QWidget):
 
         fixed_left_layout.addLayout(form_layout)
 
-        # Wrap fixed_left_widget with spacing
+        # Wrap fixed_left widget with spacing
         left_side = QVBoxLayout()
         left_side.addStretch(1)
         left_side.addWidget(fixed_left_widget, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -159,9 +159,10 @@ class ManagerLogin(QWidget):
 
         try:
             stored_hash = db.manager_pass(username)
-            if stored_hash and argon2.verify(password, stored_hash[0]):
+            if stored_hash and db._verify_password(stored_hash[0], password):
                 QMessageBox.information(
-                    self, "ورود", "مدیر خوش آمدید", QMessageBox.StandardButton.Ok)
+                    self, "ورود", "ورود موفقیت آمیز بود",
+                    QMessageBox.StandardButton.Ok)
                 # Proceed to next screen
             else:
                 QMessageBox.warning(
@@ -171,7 +172,7 @@ class ManagerLogin(QWidget):
                 self.password.setText("")
         except Exception as e:
             QMessageBox.critical(
-                self, "خطا", f"مشکل در سیستم به وجود آمده: {str(e)}",
+                self, "خطا", f"خطا در سیستم: {str(e)}",
                 QMessageBox.StandardButton.Ok)
             self.username.setText("")
             self.password.setText("")
@@ -189,7 +190,7 @@ class ManagerLogin(QWidget):
         first_stage_widget = QWidget()
         first_layout = QVBoxLayout()
 
-        label = QLabel("حیوان مورد علاقه شما چیست؟")
+        label = QLabel("لطفاً اطلاعات امنیتی را وارد کنید:")
         label.setFont(QFont('nazanintar', 20))
         label.setWordWrap(True)
         first_layout.addWidget(label)
@@ -205,7 +206,7 @@ class ManagerLogin(QWidget):
         """)
         username_edit.setFont(QFont('nazanintar', 16))
 
-        answer_edit.setPlaceholderText("جواب سوال امنیتی")
+        answer_edit.setPlaceholderText("پاسخ سوال امنیتی")
         answer_edit.setStyleSheet("""
             QLineEdit {
                 background-color: #e1e8f0;
