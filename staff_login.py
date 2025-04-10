@@ -1,38 +1,42 @@
+# ایمپورت کلاس‌ها و توابع موردنیاز از PyQt6
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton,
     QMessageBox, QVBoxLayout, QHBoxLayout
 )
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
-from data_base import DataBase
+from data_base import DataBase  # ایمپورت کلاس پایگاه داده برای بررسی اطلاعات
 
-
+# تعریف کلاس ورود کارکن
 class StaffLogin(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.parent = parent
-        self.setup_ui()
+        self.parent = parent  # نگهداری ارجاع به پنجره والد
+        self.setup_ui()       # راه‌اندازی رابط کاربری
 
+    # متد راه‌اندازی رابط گرافیکی
     def setup_ui(self):
-        # Outer layout
+        self.setStyleSheet("background-color: white;border-radius: 20px;")  # تنظیم ظاهر کلی ویجت
+
+        # لایه بیرونی افقی شامل بخش‌های چپ و راست
         outer_layout = QHBoxLayout(self)
 
-        # === Left fixed container ===
+        # === ویجت ثابت سمت چپ ===
         fixed_left_widget = QWidget()
-        fixed_left_widget.setFixedSize(400, 600)
+        fixed_left_widget.setFixedSize(400, 600)  # اندازه ثابت برای بخش چپ
         fixed_left_layout = QVBoxLayout(fixed_left_widget)
-        fixed_left_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        fixed_left_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)  # تراز وسط چین
 
-        # Title label
+        # عنوان صفحه "ورود کارکن"
         self.label = QLabel("ورود کارکن")
         self.label.setFont(QFont('nazanintar', 28))
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setStyleSheet("""
+        self.label.setStyleSheet(""" 
             QLabel {
                 color: white;
                 font-size: 28px;
                 font-weight: bold;
-                border-radius: 5px;
+                border-radius: 15px;
                 padding: 8px 20px;
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgba(150, 150, 150, 220),
@@ -44,7 +48,7 @@ class StaffLogin(QWidget):
         """)
         fixed_left_layout.addWidget(self.label)
 
-        # Staff image
+        # تصویر نمادین کارمند
         self.staff_image = QLabel()
         staff_pixmap = QPixmap("staff.png")
         if not staff_pixmap.isNull():
@@ -56,10 +60,11 @@ class StaffLogin(QWidget):
         self.staff_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         fixed_left_layout.addWidget(self.staff_image)
 
-        # Form layout
+        # لایه فرم ورود
         form_layout = QVBoxLayout()
         form_layout.setSpacing(20)
 
+        # فیلد نام کاربری
         self.username = QLineEdit()
         self.username.setFont(QFont('nazanintar', 16))
         self.username.setPlaceholderText("نام کاربری")
@@ -74,19 +79,20 @@ class StaffLogin(QWidget):
         """)
         form_layout.addWidget(self.username)
 
+        # فیلد رمز عبور
         self.password = QLineEdit()
         self.password.setFont(QFont('nazanintar', 16))
         self.password.setPlaceholderText("رمز عبور")
-        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)  # نمایش نقطه به‌جای کاراکتر
         self.password.setStyleSheet(self.username.styleSheet())
-        # Connect returnPressed signal to check_login
-        self.password.returnPressed.connect(self.check_login)
+        self.password.returnPressed.connect(self.check_login)  # زدن Enter باعث ورود شود
         form_layout.addWidget(self.password)
 
-        # Buttons layout
+        # لایه دکمه‌ها
         buttons_layout = QHBoxLayout()
         buttons_layout.setSpacing(20)
 
+        # دکمه بازگشت
         self.back_button = QPushButton("بازگشت")
         self.back_button.setFont(QFont('nazanintar', 20))
         self.back_button.setStyleSheet("""
@@ -101,31 +107,31 @@ class StaffLogin(QWidget):
                 background-color: #e0392b;
             }
         """)
-        self.back_button.clicked.connect(lambda: self.parent.init_main_menu())
+        self.back_button.clicked.connect(lambda: self.parent.init_main_menu())  # بازگشت به منوی اصلی
         buttons_layout.addWidget(self.back_button)
 
+        # دکمه ورود
         self.login_button = QPushButton("ورود")
         self.login_button.setFont(QFont('nazanintar', 20))
         self.login_button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #3498db;
-                        color: white;
-                        border-radius: 5px;
-                        min-width: 120px;
-                        min-height: 50px;
-                    }
-                    QPushButton:hover {
-                        background-color: #2980b9;
-                    }
-                """)
-        self.login_button.clicked.connect(self.check_login)
-        # Set as default button to respond to Enter key
-        self.login_button.setDefault(True)
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                border-radius: 5px;
+                min-width: 120px;
+                min-height: 50px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        """)
+        self.login_button.clicked.connect(self.check_login)  # اتصال دکمه به متد ورود
+        self.login_button.setDefault(True)  # پیش‌فرض برای فشردن Enter
         buttons_layout.addWidget(self.login_button)
 
         form_layout.addLayout(buttons_layout)
 
-        # New Help button below the row
+        # دکمه راهنما / بازیابی رمز عبور
         self.help_button = QPushButton("بازیابی رمز عبور")
         self.help_button.setFont(QFont('nazanintar', 20))
         self.help_button.setStyleSheet("""
@@ -140,39 +146,39 @@ class StaffLogin(QWidget):
                 background-color: #6f86a1;
             }
         """)
-        self.help_button.clicked.connect(self.show_help)
+        self.help_button.clicked.connect(self.show_help)  # نمایش پیام راهنما
         form_layout.addWidget(self.help_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         fixed_left_layout.addLayout(form_layout)
 
-        # --- Wrap fixed_left_widget with spacing to center in left half ---
+        # --- مرکزچین کردن ویجت چپ در لایه خارجی ---
         left_side = QVBoxLayout()
         left_side.addStretch(1)
         left_side.addWidget(fixed_left_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         left_side.addStretch(1)
 
-        outer_layout.addLayout(left_side, 1)  # Left half
-        outer_layout.addStretch(1)  # Right half (empty stretch)
+        outer_layout.addLayout(left_side, 1)  # نیمه چپ
+        outer_layout.addStretch(1)           # نیمه راست (خالی)
 
+    # بررسی اطلاعات ورود
     def check_login(self):
-        db = DataBase("project_db.db")
+        db = DataBase("project_db.db")  # اتصال به پایگاه داده
 
         username = self.username.text()
         password = self.password.text()
 
         try:
-            correct_password = db.staff_pass(username)
+            correct_password = db.staff_pass(username)  # دریافت رمز صحیح از پایگاه داده
             if correct_password and correct_password[0] == password:
                 QMessageBox.information(self, "ورود", "خوش آمدید", QMessageBox.StandardButton.Ok)
-                # Proceed to staff dashboard or next screen
+                # ورود موفق، می‌توان به صفحه بعدی منتقل شد
             else:
                 QMessageBox.warning(self, "خطا", "نام کاربری یا رمز عبور اشتباه است!", QMessageBox.StandardButton.Ok)
-                self.username.setText("")
-                self.password.setText("")
+                self.password.setText("")  # پاک کردن رمز عبور اشتباه
         except Exception as e:
             QMessageBox.critical(self, "خطا", "مشکلی در سیستم به وجود آمده است!", QMessageBox.StandardButton.Ok)
-            self.username.setText("")
             self.password.setText("")
 
+    # متد راهنما
     def show_help(self):
         QMessageBox.information(self, "راهنما", "در صورت نیاز به راهنمایی، با مدیر تماس بگیرید.", QMessageBox.StandardButton.Ok)

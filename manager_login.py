@@ -1,29 +1,34 @@
+# وارد کردن ابزارهای لازم از کتابخانه PyQt6 برای ایجاد رابط کاربری
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton,
     QMessageBox, QVBoxLayout, QHBoxLayout, QDialog
 )
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
-from data_base import DataBase
+from data_base import DataBase  # وارد کردن کلاس پایگاه داده
 
-
+# تعریف کلاس ManagerLogin برای صفحه ورود مدیر
 class ManagerLogin(QWidget):
     def __init__(self, parent):
-        super().__init__(parent)
-        self.parent = parent
-        self.setup_ui()
+        super().__init__(parent)  # فراخوانی سازنده کلاس والد
+        self.parent = parent  # ذخیره ارجاع به فرم والد
+        self.setup_ui()  # راه‌اندازی رابط کاربری
 
     def setup_ui(self):
-        # Outer layout
+        # تنظیم رنگ پس‌زمینه کلی فرم به سفید و گرد کردن لبه‌ها
+        self.setStyleSheet("background-color: white;border-radius: 20px;")
+
+        # ایجاد لایه افقی اصلی برای فرم
         outer_layout = QHBoxLayout(self)
 
-        # === Left fixed container ===
+        # === ساخت بخش ثابت سمت چپ ===
         fixed_left_widget = QWidget()
-        fixed_left_widget.setFixedSize(400, 600)
+        fixed_left_widget.setFixedSize(400, 600)  # تنظیم اندازه ثابت
+        fixed_left_widget.setStyleSheet("background-color: white;")
         fixed_left_layout = QVBoxLayout(fixed_left_widget)
         fixed_left_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Title label
+        # ایجاد عنوان اصلی فرم
         self.label = QLabel("ورود مدیر")
         self.label.setFont(QFont('nazanintar', 28))
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -32,7 +37,7 @@ class ManagerLogin(QWidget):
                 color: white;
                 font-size: 28px;
                 font-weight: bold;
-                border-radius: 5px;
+                border-radius: 15px;
                 padding: 8px 20px;
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgba(150, 150, 150, 220),
@@ -44,7 +49,7 @@ class ManagerLogin(QWidget):
         """)
         fixed_left_layout.addWidget(self.label)
 
-        # Staff image
+        # افزودن تصویر مدیر
         self.staff_image = QLabel()
         staff_pixmap = QPixmap("manager.png")
         if not staff_pixmap.isNull():
@@ -56,10 +61,11 @@ class ManagerLogin(QWidget):
         self.staff_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         fixed_left_layout.addWidget(self.staff_image)
 
-        # Form layout
+        # ایجاد فرم ورود شامل نام کاربری و رمز عبور
         form_layout = QVBoxLayout()
         form_layout.setSpacing(20)
 
+        # فیلد نام کاربری
         self.username = QLineEdit()
         self.username.setFont(QFont('nazanintar', 16))
         self.username.setPlaceholderText("نام کاربری")
@@ -74,18 +80,20 @@ class ManagerLogin(QWidget):
         """)
         form_layout.addWidget(self.username)
 
+        # فیلد رمز عبور
         self.password = QLineEdit()
         self.password.setFont(QFont('nazanintar', 16))
         self.password.setPlaceholderText("رمز عبور")
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.password.setStyleSheet(self.username.styleSheet())
-        self.password.returnPressed.connect(self.check_login)
+        self.password.returnPressed.connect(self.check_login)  # فعال شدن با زدن Enter
         form_layout.addWidget(self.password)
 
-        # Buttons layout
+        # === دکمه‌های ورود و بازگشت ===
         buttons_layout = QHBoxLayout()
         buttons_layout.setSpacing(20)
 
+        # دکمه بازگشت به منوی اصلی
         self.back_button = QPushButton("بازگشت")
         self.back_button.setFont(QFont('nazanintar', 20))
         self.back_button.setStyleSheet("""
@@ -103,6 +111,7 @@ class ManagerLogin(QWidget):
         self.back_button.clicked.connect(lambda: self.parent.init_main_menu())
         buttons_layout.addWidget(self.back_button)
 
+        # دکمه ورود
         self.login_button = QPushButton("ورود")
         self.login_button.setFont(QFont('nazanintar', 20))
         self.login_button.setStyleSheet("""
@@ -123,7 +132,7 @@ class ManagerLogin(QWidget):
 
         form_layout.addLayout(buttons_layout)
 
-        # Help button
+        # دکمه بازیابی رمز عبور
         self.help_button = QPushButton("بازیابی رمز عبور")
         self.help_button.setFont(QFont('nazanintar', 20))
         self.help_button.setStyleSheet("""
@@ -141,19 +150,22 @@ class ManagerLogin(QWidget):
         self.help_button.clicked.connect(self.show_help)
         form_layout.addWidget(self.help_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
+        # اضافه کردن فرم به ستون اصلی سمت چپ
         fixed_left_layout.addLayout(form_layout)
 
-        # Wrap fixed_left widget with spacing
+        # چیدمان نهایی بخش سمت چپ
         left_side = QVBoxLayout()
         left_side.addStretch(1)
         left_side.addWidget(fixed_left_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         left_side.addStretch(1)
 
+        # اضافه کردن بخش سمت چپ به لایه اصلی
         outer_layout.addLayout(left_side, 1)
         outer_layout.addStretch(1)
 
+    # تابع بررسی اطلاعات ورود
     def check_login(self):
-        db = DataBase("project_db.db")
+        db = DataBase("project_db.db")  # اتصال به پایگاه داده
         username = self.username.text()
         password = self.password.text()
 
@@ -163,30 +175,29 @@ class ManagerLogin(QWidget):
                 QMessageBox.information(
                     self, "ورود", "ورود موفقیت آمیز بود",
                     QMessageBox.StandardButton.Ok)
-                # Proceed to next screen
+                # رفتن به صفحه بعد
             else:
                 QMessageBox.warning(
                     self, "خطا", "نام کاربری یا رمز عبور اشتباه است",
                     QMessageBox.StandardButton.Ok)
-                self.username.setText("")
                 self.password.setText("")
         except Exception as e:
             QMessageBox.critical(
                 self, "خطا", f"خطا در سیستم: {str(e)}",
                 QMessageBox.StandardButton.Ok)
-            self.username.setText("")
             self.password.setText("")
 
+    # تابع نمایش پنجره بازیابی رمز عبور
     def show_help(self):
         dialog = QDialog(self)
         dialog.setWindowTitle("بازیابی رمز عبور")
         dialog.setFixedSize(400, 300)
-        dialog.setStyleSheet("background-color: #7da9b8;")
+        dialog.setStyleSheet("background-color: white;")
 
-        # Main layout
+        # لایه اصلی پنجره
         main_layout = QVBoxLayout()
 
-        # First stage widgets
+        # بخش اول: گرفتن اطلاعات امنیتی
         first_stage_widget = QWidget()
         first_layout = QVBoxLayout()
 
@@ -235,7 +246,7 @@ class ManagerLogin(QWidget):
         first_stage_widget.setLayout(first_layout)
         main_layout.addWidget(first_stage_widget)
 
-        # Second stage widgets (initially hidden)
+        # بخش دوم: وارد کردن رمز عبور جدید
         second_stage_widget = QWidget()
         second_layout = QVBoxLayout()
         new_pass_label = QLabel("رمز عبور جدید را وارد کنید:")
@@ -287,6 +298,7 @@ class ManagerLogin(QWidget):
 
         dialog.setLayout(main_layout)
 
+        # تابع بررسی پاسخ امنیتی
         def verify_answer():
             db = DataBase("project_db.db")
             passRecovery = db.manager_recovery(username_edit.text())
@@ -302,6 +314,7 @@ class ManagerLogin(QWidget):
                 username_edit.setText("")
                 answer_edit.setText("")
 
+        # تابع ارسال رمز جدید
         def submit_new_password():
             new_pass = new_pass_edit.text()
             confirm_pass = confirm_pass_edit.text()
@@ -330,7 +343,7 @@ class ManagerLogin(QWidget):
                     dialog, "خطا", f"خطا در تغییر رمز عبور: {str(e)}",
                     QMessageBox.StandardButton.Ok)
 
-        # Connect signals
+        # اتصال دکمه‌ها به توابع
         answer_edit.returnPressed.connect(verify_answer)
         verify_button.clicked.connect(verify_answer)
         new_pass_edit.returnPressed.connect(submit_new_password)
