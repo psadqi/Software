@@ -2,8 +2,8 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton,
     QMessageBox, QVBoxLayout, QHBoxLayout, QToolButton
 )
-from PyQt6.QtGui import QFont, QPixmap, QIcon
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QFont, QPixmap, QIcon, QRegularExpressionValidator
+from PyQt6.QtCore import Qt, QSize, QRegularExpression
 from data_base import DataBase
 
 
@@ -64,20 +64,30 @@ class StaffLogin(QWidget):
         form_layout = QVBoxLayout()
         form_layout.setSpacing(20)
 
-        # فیلد نام کاربری
+        # فیلد ورودی نام کاربری
         self.username = QLineEdit()
         self.username.setFont(QFont('nazanintar', 16))
         self.username.setPlaceholderText("\u200Eنام کاربری")
         self.username.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        # حداکثر تعداد کاراکتر
+        self.username.setMaxLength(30)
+
+        # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
+        username_validator = QRegularExpressionValidator(
+            QRegularExpression("^[a-zA-Z0-9_\\-\\.]+$"), self.username
+        )
+        self.username.setValidator(username_validator)
+        self.username.textChanged.connect(self.update_username_style)
+
         self.username.setStyleSheet("""
-            QLineEdit {
-                background: white;
-                border: 2px solid #3498db;
-                border-radius: 5px;
-                padding: 5px;
-                min-width: 300px;
-            }
-        """)
+                    QLineEdit {
+                        background: white;
+                        border: 2px solid #3498db;
+                        border-radius: 5px;
+                        padding: 5px;
+                        min-width: 300px;
+                    }
+                """)
         form_layout.addWidget(self.username)
 
         # فیلد رمز عبور با آیکون چشم بزرگتر
@@ -199,6 +209,30 @@ class StaffLogin(QWidget):
 
         outer_layout.addLayout(left_side, 1)
         outer_layout.addStretch(1)
+
+    #استایل فیلد یوزرنیم
+    def update_username_style(self):
+        """استایل فیلد با توجه به صحت ان"""
+        if self.username.hasAcceptableInput():
+            self.username.setStyleSheet("""
+                QLineEdit {
+                    background: white;
+                    border: 2px solid #3498db;
+                    border-radius: 5px;
+                    padding: 5px;
+                    min-width: 300px;
+                }
+            """)
+        else:
+            self.username.setStyleSheet("""
+                QLineEdit {
+                    background: #FFEBEE;
+                    border: 2px solid #e74c3c;
+                    border-radius: 5px;
+                    padding: 5px;
+                    min-width: 300px;
+                }
+            """)
 
     # متد تغییر حالت نمایش رمز عبور
     def toggle_password_visibility(self):

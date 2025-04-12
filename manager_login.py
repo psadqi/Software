@@ -2,8 +2,8 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton,
     QMessageBox, QVBoxLayout, QHBoxLayout, QDialog, QToolButton
 )
-from PyQt6.QtGui import QFont, QPixmap, QIcon
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QFont, QPixmap, QIcon, QRegularExpressionValidator
+from PyQt6.QtCore import Qt, QSize, QRegularExpression
 from data_base import DataBase
 
 
@@ -68,6 +68,16 @@ class ManagerLogin(QWidget):
         self.username.setFont(QFont('nazanintar', 16))
         self.username.setPlaceholderText("\u200Eنام کاربری")
         self.username.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        #حداکثر تعداد کاراکتر
+        self.username.setMaxLength(30)
+
+        # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
+        username_validator = QRegularExpressionValidator(
+            QRegularExpression("^[a-zA-Z0-9_\\-\\.]+$"), self.username
+        )
+        self.username.setValidator(username_validator)
+        self.username.textChanged.connect(self.update_username_style)
+
         self.username.setStyleSheet("""
             QLineEdit {
                 background: white;
@@ -197,6 +207,30 @@ class ManagerLogin(QWidget):
         outer_layout.addLayout(left_side, 1)
         outer_layout.addStretch(1)
 
+    # استایل فیلد یوزرنیم
+    def update_username_style(self):
+        """استایل فیلد با توجه به صحت ان"""
+        if self.username.hasAcceptableInput():
+            self.username.setStyleSheet("""
+                QLineEdit {
+                    background: white;
+                    border: 2px solid #3498db;
+                    border-radius: 5px;
+                    padding: 5px;
+                    min-width: 300px;
+                }
+            """)
+        else:
+            self.username.setStyleSheet("""
+                QLineEdit {
+                    background: #FFEBEE;
+                    border: 2px solid #e74c3c;
+                    border-radius: 5px;
+                    padding: 5px;
+                    min-width: 300px;
+                }
+            """)
+
     # تابع برای تغییر وضعیت نمایش رمز عبور
     def toggle_password_visibility(self):
         if self.password.echoMode() == QLineEdit.EchoMode.Password:
@@ -243,7 +277,7 @@ class ManagerLogin(QWidget):
         first_stage_widget = QWidget()
         first_layout = QVBoxLayout()
 
-        label = QLabel("لطفاً اطلاعات امنیتی را وارد کنید:")
+        label = QLabel("اسم حیوان مورد علاقه شما چیست؟")
         label.setFont(QFont('nazanintar', 20))
         label.setWordWrap(True)
         first_layout.addWidget(label)
@@ -251,15 +285,27 @@ class ManagerLogin(QWidget):
         username_edit = QLineEdit()
         answer_edit = QLineEdit()
         username_edit.setPlaceholderText("نام کاربری")
+
+        # حداکثر تعداد کاراکتر
+        username_edit.setMaxLength(30)
+        
+        # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
+        username_validator = QRegularExpressionValidator(
+            QRegularExpression("^[a-zA-Z0-9_\\-\\.]+$"), username_edit
+        )
         username_edit.setStyleSheet("""
-            QLineEdit {
-                background-color: #e1e8f0;
-                border-radius: 3px;
-            }
-        """)
+                    QLineEdit {
+                        background-color: #e1e8f0;
+                        border-radius: 3px;
+                    }
+                """)
+
+
+        username_edit.setValidator(username_validator)
+
         username_edit.setFont(QFont('nazanintar', 16))
 
-        answer_edit.setPlaceholderText("پاسخ سوال امنیتی")
+        answer_edit.setPlaceholderText("پاسخ سوال")
         answer_edit.setStyleSheet("""
             QLineEdit {
                 background-color: #e1e8f0;

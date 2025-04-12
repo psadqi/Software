@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
         self.manager_button.clicked.connect(self.show_manager_login)
 
         # ساخت دکمه ورود کارکن
-        self.staff_button = QPushButton("کارکن", central_widget)
+        self.staff_button = QPushButton("کارکنان", central_widget)
         self.staff_button.setFont(QFont("nazanintar", 20))
         self.staff_button.setStyleSheet("""
             QPushButton {
