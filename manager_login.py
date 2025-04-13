@@ -6,6 +6,18 @@ from PyQt6.QtGui import QFont, QPixmap, QIcon, QRegularExpressionValidator
 from PyQt6.QtCore import Qt, QSize, QRegularExpression
 from data_base import DataBase
 
+import sys
+import os
+
+def resource_path(relative_path):
+    """
+    Get absolute path to resource, works for dev and for PyInstaller (.exe)
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # When bundled by PyInstaller
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 
 # کلاس ورود مدیر
 class ManagerLogin(QWidget):
@@ -49,7 +61,7 @@ class ManagerLogin(QWidget):
 
         # تصویر مربوط به مدیر
         self.staff_image = QLabel()
-        staff_pixmap = QPixmap("manager.png")
+        staff_pixmap = QPixmap(resource_path("manager.png"))
         if not staff_pixmap.isNull():
             self.staff_image.setPixmap(staff_pixmap.scaled(
                 300, 300,
@@ -119,8 +131,7 @@ class ManagerLogin(QWidget):
             }
         """)
         # تنظیم آیکون بزرگ برای چشم
-        eye_icon = QIcon("eye.png")
-        eye_off_icon = QIcon("eye-off.png")
+        eye_icon = QIcon(resource_path("eye.png"))
         self.eye_button.setIconSize(QSize(30, 30))
         self.eye_button.setIcon(eye_icon)
         self.eye_button.clicked.connect(self.toggle_password_visibility)
@@ -235,10 +246,10 @@ class ManagerLogin(QWidget):
     def toggle_password_visibility(self):
         if self.password.echoMode() == QLineEdit.EchoMode.Password:
             self.password.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.eye_button.setIcon(QIcon("eye-off.png"))
+            self.eye_button.setIcon(QIcon(resource_path("eye-off.png")))
         else:
             self.password.setEchoMode(QLineEdit.EchoMode.Password)
-            self.eye_button.setIcon(QIcon("eye.png"))
+            self.eye_button.setIcon(QIcon(resource_path("eye.png")))
         # حفظ اندازه آیکون
         self.eye_button.setIconSize(QSize(30, 30))
 
@@ -288,7 +299,7 @@ class ManagerLogin(QWidget):
 
         # حداکثر تعداد کاراکتر
         username_edit.setMaxLength(30)
-        
+
         # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
         username_validator = QRegularExpressionValidator(
             QRegularExpression("^[a-zA-Z0-9_\\-\\.]+$"), username_edit

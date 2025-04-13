@@ -6,6 +6,18 @@ from PyQt6.QtGui import QFont, QPixmap, QIcon, QRegularExpressionValidator
 from PyQt6.QtCore import Qt, QSize, QRegularExpression
 from data_base import DataBase
 
+import sys
+import os
+
+def resource_path(relative_path):
+    """
+    Get absolute path to resource, works for dev and for PyInstaller (.exe)
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # When bundled by PyInstaller
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 
 class StaffLogin(QWidget):
     # سازنده کلاس که برای تنظیمات اولیه و راه‌اندازی رابط کاربری استفاده می‌شود
@@ -50,7 +62,7 @@ class StaffLogin(QWidget):
 
         # تصویر مربوط به کارکنان
         self.staff_image = QLabel()
-        staff_pixmap = QPixmap("staff.png")  # بارگذاری تصویر کارکن
+        staff_pixmap = QPixmap(resource_path("staff.png"))  # بارگذاری تصویر کارکن
         if not staff_pixmap.isNull():
             self.staff_image.setPixmap(staff_pixmap.scaled(
                 300, 300,
@@ -121,8 +133,7 @@ class StaffLogin(QWidget):
         """)
 
         # تنظیم اندازه آیکون (30x30)
-        eye_icon = QIcon("eye.png")
-        eye_off_icon = QIcon("eye-off.png")
+        eye_icon = QIcon(resource_path("eye.png"))
         self.eye_button.setIconSize(QSize(30, 30))
         self.eye_button.setIcon(eye_icon)
         self.eye_button.clicked.connect(self.toggle_password_visibility)
@@ -238,10 +249,10 @@ class StaffLogin(QWidget):
     def toggle_password_visibility(self):
         if self.password.echoMode() == QLineEdit.EchoMode.Password:
             self.password.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.eye_button.setIcon(QIcon("eye-off.png"))
+            self.eye_button.setIcon(QIcon(resource_path("eye-off.png")))
         else:
             self.password.setEchoMode(QLineEdit.EchoMode.Password)
-            self.eye_button.setIcon(QIcon("eye.png"))
+            self.eye_button.setIcon(QIcon(resource_path("eye.png")))
         # حفظ اندازه آیکون
         self.eye_button.setIconSize(QSize(30, 30))
 
@@ -254,7 +265,7 @@ class StaffLogin(QWidget):
         try:
             correct_password = db.staff_pass(username)
             if correct_password and correct_password[0] == password:
-                QMessageBox.information(self, "ورود", "خوش آمدید", QMessageBox.StandardButton.Ok)
+                QMessageBox.information(self, "ورود", "ورود موفقیت آمیز بود", QMessageBox.StandardButton.Ok)
             else:
                 QMessageBox.warning(self, "خطا", "نام کاربری یا رمز عبور اشتباه است!", QMessageBox.StandardButton.Ok)
                 self.password.setText("")  # پاک کردن رمز عبور در صورت اشتباه بودن

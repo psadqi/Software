@@ -2,11 +2,17 @@ import sqlite3
 import hashlib
 import os
 import binascii
+import sys
 
-# کلاس پایگاه داده برای مدیریت رمزهای عبور و تعامل با دیتابیس SQLite
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 class DataBase:
     def __init__(self, name):
-        self.name = name  # نام فایل پایگاه داده
+        self.name = resource_path(name)
+ # نام فایل پایگاه داده
 
     def _hash_password(self, password):
         """

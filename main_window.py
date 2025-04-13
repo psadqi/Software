@@ -7,6 +7,19 @@ from PyQt6.QtCore import Qt
 from manager_login import ManagerLogin
 from staff_login import StaffLogin
 
+import sys
+import os
+
+def resource_path(relative_path):
+    """
+    Get absolute path to resource, works for dev and for PyInstaller (.exe)
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # When bundled by PyInstaller
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+
 # تعریف کلاس اصلی پنجره که از QMainWindow ارث‌بری می‌کند
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -16,7 +29,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("گیم نت")
 
         # تنظیم آیکون پنجره (تصویر لوگو)
-        self.setWindowIcon(QIcon("logo.png"))
+        self.setWindowIcon(QIcon(resource_path("logo.png")))
 
         # تنظیم اندازه و موقعیت اولیه پنجره
         self.setGeometry(300, 200, 1000, 600)
@@ -34,7 +47,7 @@ class MainWindow(QMainWindow):
         palette = self.palette()
 
         # بارگذاری تصویر
-        pixmap = QPixmap(image_path)
+        pixmap = QPixmap(resource_path(image_path))
 
         # اگر تصویر بارگذاری نشد، خطا چاپ می‌شود
         if pixmap.isNull():

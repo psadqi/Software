@@ -1,3 +1,3 @@
-type pip install pyqt6 in (pycharm/vscode) terminal then run main_window.py
+run main_window.exe
 
 user, password and pass recovery is in adminPass.txt
