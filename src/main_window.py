@@ -1,4 +1,4 @@
-# وارد کردن ویجت‌های مورد نیاز از کتابخانه PyQt6
+567890# وارد کردن ویجت‌های مورد نیاز از کتابخانه PyQt6
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QWidget, QLineEdit, QLabel, QVBoxLayout
 from PyQt6.QtGui import QFont, QIcon, QPixmap, QPainter, QPalette, QBrush
 from PyQt6.QtCore import Qt
