@@ -5,7 +5,7 @@ a = Analysis(
     ['main_window.py'],
     pathex=[],
     binaries=[],
-    datas=[('logo.png', '.'), ('main.jpg', '.'), ('staff.png', '.'), ('manager.png', '.'), ('eye.png', '.'), ('eye-off.png', '.'), ('project_db.db', '.')],
+    datas=[('logo.png', '.'), ('main.jpg', '.'), ('manager.png', '.'), ('staff.png', '.'), ('eye.png', '.'), ('eye-off.png', '.'), ('project_db.db', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['logo.png'],
 )
