@@ -82,7 +82,7 @@ class StaffLogin(QWidget):
         self.username.setPlaceholderText("\u200Eنام کاربری")
         self.username.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         # حداکثر تعداد کاراکتر
-        self.username.setMaxLength(30)
+        self.username.setMaxLength(20)
 
         # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
         username_validator = QRegularExpressionValidator(
@@ -118,6 +118,7 @@ class StaffLogin(QWidget):
                 padding-right: 40px;  /* فضای برای آیکون چشم */
             }
         """)
+        self.password.setMaxLength(20)
         self.password.returnPressed.connect(self.check_login)
 
         # دکمه چشم برای نمایش/پنهان کردن رمز عبور

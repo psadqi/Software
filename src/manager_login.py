@@ -81,7 +81,7 @@ class ManagerLogin(QWidget):
         self.username.setPlaceholderText("\u200Eنام کاربری")
         self.username.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         #حداکثر تعداد کاراکتر
-        self.username.setMaxLength(30)
+        self.username.setMaxLength(20)
 
         # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
         username_validator = QRegularExpressionValidator(
@@ -117,6 +117,7 @@ class ManagerLogin(QWidget):
                 padding-right: 40px;  /* ایجاد فضا برای آیکون چشم */
             }
         """)
+        self.password.setMaxLength(20)
         self.password.returnPressed.connect(self.check_login)
 
         # دکمه چشم برای نمایش یا مخفی کردن رمز عبور
@@ -298,7 +299,7 @@ class ManagerLogin(QWidget):
         username_edit.setPlaceholderText("نام کاربری")
 
         # حداکثر تعداد کاراکتر
-        username_edit.setMaxLength(30)
+        username_edit.setMaxLength(20)
 
         # مقادیر قابل قبول (A-Z, a-z, 0-9, _, -, .)
         username_validator = QRegularExpressionValidator(
@@ -360,6 +361,7 @@ class ManagerLogin(QWidget):
                 border-radius: 3px;
             }
         """)
+        new_pass_edit.setMaxLength(20)
         new_pass_edit.setEchoMode(QLineEdit.EchoMode.Password)
         second_layout.addWidget(new_pass_edit)
 
@@ -372,6 +374,7 @@ class ManagerLogin(QWidget):
                 border-radius: 3px;
             }
         """)
+        confirm_pass_edit.setMaxLength(20)
         confirm_pass_edit.setEchoMode(QLineEdit.EchoMode.Password)
         second_layout.addWidget(confirm_pass_edit)
 
